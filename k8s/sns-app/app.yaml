@@ -64,12 +64,14 @@ spec:
                 secretKeyRef:
                   name: sns-secret
                   key: rustfs-secret-key
-            - name: NODE_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.hostIP
-            - name: OTEL_EXPORTER_OTLP_ENDPOINT
-              value: http://$(NODE_IP):4318
+            # opentelemetry exportor로 sns 앱에서 opentelemetry logging으로 전송하는 방식이 아닌
+            # opentelemetry collector가 직접 조회해오는 방식을 위해 아래의 설정을 주석 처리.
+            #            - name: NODE_IP
+            #              valueFrom:
+            #                fieldRef:
+            #                  fieldPath: status.hostIP
+            #            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+            #              value: http://$(NODE_IP):4318
             - name: JAVA_TOOL_OPTIONS
               value: "-XX:MaxRAMPercentage=50"
           readinessProbe:
