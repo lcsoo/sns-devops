@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: sns-app
-          image: ghcr.io/lcsoo/sns-app:493a8fb
+          image: ghcr.io/lcsoo/sns-app:99efa6c
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
@@ -64,6 +64,16 @@ spec:
                 secretKeyRef:
                   name: sns-secret
                   key: rustfs-secret-key
+            - name: RECOMMEND_BASE_URL
+              value: http://sns-recommend.sns.svc.cluster.local:8080
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://$(NODE_IP):4318
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:MaxRAMPercentage=50"
             # opentelemetry exportor로 sns 앱에서 opentelemetry logging으로 전송하는 방식이 아닌
             # opentelemetry collector가 직접 조회해오는 방식을 위해 아래의 설정을 주석 처리.
             #            - name: NODE_IP
@@ -72,8 +82,6 @@ spec:
             #                  fieldPath: status.hostIP
             #            - name: OTEL_EXPORTER_OTLP_ENDPOINT
             #              value: http://$(NODE_IP):4318
-            - name: JAVA_TOOL_OPTIONS
-              value: "-XX:MaxRAMPercentage=50"
           readinessProbe:
             httpGet:
               path: /actuator/health
